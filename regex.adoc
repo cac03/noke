@@ -1,0 +1,46 @@
+= Regex
+
+:toc:
+
+This document contains some of my notes about regular expressions, mostly used within Java
+
+== Greedy vs Reluctant quantifiers
+
+=== Greedy
+
+Greedy quantifier makes regex engine consume all matching characters __eagerly__.
+
+Consider the following test:
+
+[source,java]
+----
+@Test
+void greedyQuantifierConsumesAllCharacters() {
+    Pattern pattern = Pattern.compile("a.*(b*)");
+    Matcher matcher = pattern.matcher("abbb");
+
+    assertTrue(matcher.find());
+    assertEquals("", matcher.group(1));
+}
+----
+
+The sequence matched by the first group is empty because all characters after the `a` were consumed by the `.*` so there is nothing left for `b*`.
+
+=== Reluctant
+
+On the other hand the reluctant quantifier consumes all characters __lazily__.
+
+[source,java]
+----
+@Test
+void reluctantModifierConsumesCharactersLazily() {
+    Pattern pattern = Pattern.compile("a.*?(b*)");
+    Matcher matcher = pattern.matcher("abbb");
+
+    assertTrue(matcher.find());
+    assertEquals("bbb", matcher.group(1));
+}
+----
+
+In this case the `.*?` is reluctant, this means that it won't consume any characters unless it has to.
+
